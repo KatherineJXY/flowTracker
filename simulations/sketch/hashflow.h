@@ -47,9 +47,11 @@ public:
     void init();
     void status();
     fiveTuple segement(string flow);
-    bool areEqualorEmpty(int pos, const fiveTuple& flowTuple);
+    bool isEqual(int pos, const fiveTuple& flowTuple);
+    bool isEmpty(int pos, const fiveTuple& flowTuple);
     void recordPromotion(int pos, const fiveTuple& flowTuple, int count);
     void insert(string flow, int val);
+    int query(string flow);
 };
 
 #endif /*HASH_FLOW_HEADER*/

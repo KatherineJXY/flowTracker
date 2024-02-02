@@ -92,7 +92,18 @@ HashFlow::segement(string flow)
 }
 
 bool
-HashFlow::areEqualorEmpty(int pos, const fiveTuple& flowTuple)
+HashFlow::isEqual(int pos, const fiveTuple& flowTuple)
+{
+     
+    return(main_table[pos].ip_src == flowTuple.ip_src &&
+           main_table[pos].ip_dst == flowTuple.ip_dst &&
+           main_table[pos].l4_src_port == flowTuple.l4_src_port &&
+           main_table[pos].l4_dst_port == flowTuple.l4_dst_port &&
+           main_table[pos].protocol == flowTuple.protocol);
+}
+
+bool
+HashFlow::isEmpty(int pos, const fiveTuple& flowTuple)
 {
     if (main_table[pos].ip_src.empty() &&
         main_table[pos].ip_dst.empty() &&
@@ -107,16 +118,8 @@ HashFlow::areEqualorEmpty(int pos, const fiveTuple& flowTuple)
         main_table[pos].l4_dst_port = flowTuple.l4_dst_port;
         main_table[pos].protocol = flowTuple.protocol;
         return true;
-    } 
-    else if (main_table[pos].ip_src == flowTuple.ip_src &&
-            main_table[pos].ip_dst == flowTuple.ip_dst &&
-            main_table[pos].l4_src_port == flowTuple.l4_src_port &&
-            main_table[pos].l4_dst_port == flowTuple.l4_dst_port &&
-            main_table[pos].protocol == flowTuple.protocol)
-    {
-        return true;
     }
-    
+
     return false;
 }
 
@@ -135,7 +138,6 @@ void
 HashFlow::insert(string flow, int val)
 {
     fiveTuple flowTuple = segement(flow);
-    bool success = false;
     int main_table_pos, minimum_pos;
     int minimum_count = INT32_MAX;
 
@@ -143,11 +145,10 @@ HashFlow::insert(string flow, int val)
     {
         main_table_pos = main_table_hashes[i].run(flow.c_str(), flow.length()) % main_table_size;
         
-        if (areEqualorEmpty(main_table_pos, flowTuple))
+        if (isEmpty(main_table_pos, flowTuple) || isEqual(main_table_pos, flowTuple))
         {
             main_table[main_table_pos].count += val;
-            success = true;
-            break;
+            return;
         }
 
         if (main_table[main_table_pos].count < minimum_count)
@@ -157,24 +158,52 @@ HashFlow::insert(string flow, int val)
         }
     }
 
-    if (!success)
+    // main table no available place
+    int pos = ancillary_table_hash->run(flow.c_str(), flow.length()) % ancillary_table_size;
+
+    if (ancillary_table[pos].digest == main_table_pos) 
     {
-        int pos = ancillary_table_hash->run(flow.c_str(), flow.length()) % ancillary_table_size;
+        ancillary_table[pos].count += val;
+    } 
+    else 
+    {
+        ancillary_table[pos].digest = main_table_pos;
+        ancillary_table[pos].count = val;
+    }
 
-        if (ancillary_table[pos].digest == main_table_pos) 
-        {
-            ancillary_table[pos].count += val;
-        } 
-        else 
-        {
-            ancillary_table[pos].digest = main_table_pos;
-            ancillary_table[pos].count = val;
-        }
+    // record promotion
+    if (ancillary_table[pos].count >= minimum_count) 
+    {
+        recordPromotion(minimum_pos, flowTuple, ancillary_table[pos].count);
+    }
+    
+}
 
-        // record promotion
-        if (ancillary_table[pos].count >= minimum_count) 
+int
+HashFlow::query(string flow)
+{
+    int empty_ans = 0;
+    fiveTuple flowTuple = segement(flow);
+
+    int main_table_pos;
+    for (int i = 0; i < num_hash; ++i) 
+    {
+        main_table_pos = main_table_hashes[i].run(flow.c_str(), flow.length()) % main_table_size;
+        
+        if (isEqual(main_table_pos, flowTuple))
         {
-            recordPromotion(minimum_pos, flowTuple, ancillary_table[pos].count);
+            return main_table[main_table_pos].count;
         }
     }
+
+    // ancillary table digest stores the flowkey from the last hash in main table
+    int pos = ancillary_table_hash->run(flow.c_str(), flow.length()) % ancillary_table_size;
+
+    if (ancillary_table[pos].digest == main_table_pos) 
+    {
+        return ancillary_table[pos].count;
+    }
+
+    return empty_ans;
+
 }
