@@ -24,7 +24,15 @@ private:
         int digest;
         int count;
     };
-    
+
+    struct fiveTuple
+    {
+        string ip_src;
+        string ip_dst;
+        string l4_src_port;
+        string l4_dst_port;
+        string protocol;
+    };
     
     int main_table_size, ancillary_table_size, num_hash;
 
@@ -38,6 +46,10 @@ public:
 
     void init();
     void status();
+    fiveTuple segement(string flow);
+    bool areEqualorEmpty(int pos, const fiveTuple& flowTuple);
+    void recordPromotion(int pos, const fiveTuple& flowTuple, int count);
+    void insert(string flow, int val);
 };
 
 #endif /*HASH_FLOW_HEADER*/
