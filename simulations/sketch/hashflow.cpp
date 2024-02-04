@@ -51,7 +51,7 @@ HashFlow::init()
 void
 HashFlow::status()
 {
-    printf("Main table: counter arrays %d   hash:%d\n", main_table_size, num_hash);
+    printf("Main table: counter arrays %d   hash: %d\n", main_table_size, num_hash);
     printf("Ancillary table: bucket %d\n", ancillary_table_size);
 }
 
