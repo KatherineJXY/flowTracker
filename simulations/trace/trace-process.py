@@ -35,7 +35,7 @@ if __name__ == '__main__':
         net_flow = netFlow(pcap_file)
         target_clients = net_flow.get_target_client()
         # flows = []
-        file = open(r".\pcap\oc48-mfn.csv", "a+")
+        file = open(r"oc48-mfn.csv", "a+")
         time_interv = np.random.exponential(1/5, 10000000)
 
         i = 0
