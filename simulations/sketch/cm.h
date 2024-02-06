@@ -17,8 +17,8 @@ public:
 	CMSketch(int size, int num_hash);
 	~CMSketch();
 	void init();
-	void insert(int x, int val);	// x: key  val: value
-	int query(int x);
+	void insert(string flow, int val);	// x: key  val: value
+	int query(string flow);
 	void status();
 };
 

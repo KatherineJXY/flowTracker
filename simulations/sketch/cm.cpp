@@ -46,28 +46,28 @@ CMSketch::status()
 }
 
 void
-CMSketch::insert(int x, int val)
+CMSketch::insert(string flow, int val)
 {
 
     int i = 0, base = 0;
 
     for (i=0, base = 0; i < num_hash; ++i, base += row_size)
     {
-        int pos = hash[i].run((char*)&x, sizeof(int)) % row_size + base;
+		int pos = hash[i].run(flow.c_str(), flow.length()) % row_size + base;
         cnt[pos] += val;
 	}
 
 }
 
 int
-CMSketch::query(int x)
+CMSketch::query(string flow)
 {
     int ans = INT_MAX;
 
     int i = 0, base = 0;
     for(i = 0, base = 0; i < num_hash; ++i, base += row_size)
     {
-        int pos = hash[i].run((char*)&x, sizeof(int)) % row_size + base;
+		int pos = hash[i].run(flow.c_str(), flow.length()) % row_size + base;
         ans = min(ans, cnt[pos]);
     }
 

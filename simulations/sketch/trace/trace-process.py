@@ -1,49 +1,42 @@
-import pyshark
+from scapy.all import *
 import numpy as np
 
-class netFlow(object):
-    def __init__(self, file_path):
-        self.cap = pyshark.FileCapture(file_path, tshark_path=r"E:\Program Files\Wireshark\tshark.exe")
-     
-    # {ip_src, ip_dst, l4_src_port, l4_dst_port, protocol}
-    def get_target_client(self):
-        try:
-            for pkt in self.cap:
-                ip_src = pkt.ip.ip_src
-                ip_dst = pkt.ip.ip_dst
-                ip_proto = pkt.ip.proto
+def extract_five_tuple(packet):
+    if IP in packet and TCP in packet:
+        ipv4_src = packet[IP].src
+        ipv4_dst = packet[IP].dst
+        l4_src_port = packet[TCP].sport
+        l4_dst_port = packet[TCP].dport
+        protocol = packet[IP].proto
+        return ipv4_src, ipv4_dst, l4_src_port, l4_dst_port
+    elif IP in packet and UDP in packet:
+        ipv4_src = packet[IP].src
+        ipv4_dst = packet[IP].dst
+        l4_src_port = packet[UDP].sport
+        l4_dst_port = packet[UDP].dport
+        protocol = packet[IP].proto
 
-                l4_src_port = None
-                l4_dst_port = None
+        return ipv4_src, ipv4_dst, l4_src_port, l4_dst_port, protocol
+    else:
+        # Handle other protocols or edge cases as needed
+        return None
 
-                # Check transport layer protocol
-                if 'TCP' in pkt:
-                    l4_src_port = pkt.tcp.srcport
-                    l4_dst_port = pkt.tcp.dstport
-                elif 'UDP' in pkt:
-                    l4_src_port = pkt.udp.srcport
-                    l4_dst_port = pkt.udp.dstport
-                yield [ip_src+ "," + ip_dst + "," + l4_src_port + "," + l4_dst_port + "," + ip_proto]
+def generate_poisson_value():
+    # Adjust the parameters as needed for your specific use case
+    # Here, lam (lambda) is the rate parameter of the Poisson distribution
+    lam = 500  # You can adjust this value based on your requirements
+    return np.random.poisson(lam)
 
-        except AttributeError as e:
-            pass
+def parse_pcap(file_path, output_file):
+    with open(output_file, 'a+') as output:
+        packets = rdpcap(file_path)
+        for packet in packets:
+            five_tuple = extract_five_tuple(packet)
+            if five_tuple:
+                poisson_value = generate_poisson_value()
+                output_line = f"{five_tuple[0]},{five_tuple[1]},{five_tuple[2]},{five_tuple[3]},{five_tuple[4]} {poisson_value}\n"
+                output.write(output_line)
 
-if __name__ == '__main__':
-    try:
-        pcap_file = r"E:\code\Simulation_Experiment\traces\ISP_network\oc48-mfn.dirA.20020814-160000.UTC.anon.pcap\test_00000_20020815000000.pcap"
-        
-        net_flow = netFlow(pcap_file)
-        target_clients = net_flow.get_target_client()
-        # flows = []
-        file = open(r".\pcap\oc48-mfn.csv", "a+")
-        time_interv = np.random.exponential(1/5, 10000000)
-
-        i = 0
-        for target_client in target_clients:
-            flow = ",".join(target_client)
-            file.write(flow + " " + str(int(time_interv[i]*1000000)) + "\n")
-            i += 1
-        file.close()
-
-    except Exception as e:
-        print(e)
+# Replace 'your_pcap_file.pcap' with the actual path to your PCAP file
+# Replace 'output_file.csv' with the desired output file path
+parse_pcap(r"E:\code\Simulation_Experiment\traces\ISP_network\202312011400.pcap\truncate\mawi_00000_20231201130000.pcap", r".\pcap\mawi.csv")

@@ -7,7 +7,7 @@ using std::string;
 using std::vector;
 using std::pair;
 
-typedef pair<int, int> PII;
+typedef pair<string, int> PSI;
 typedef long long LL;
 #define mp std::make_pair
 #define ft first
@@ -23,7 +23,7 @@ public:
 		std::cout << "No init function." << std::endl;
 	}
 
-	virtual void insert(int x, int val)
+	virtual void insert(string flow, int val)
 	{
 		std::cout << "No insert function." << std::endl;
 	}
@@ -48,25 +48,10 @@ public:
 		std::cout << "No remove function." << std::endl;
 	}
 
-    virtual int query(int x)
+    virtual int query(string flow)
     {
         std::cout << "No query function." << std::endl;
     }
-
-	virtual vector<PII> query_all()
-	{
-		std::cout << "No query function." << std::endl;
-	}
-
-    virtual vector<PII> query_topk(int k)
-	{
-		std::cout << "No query function." << std::endl;
-	}
-
-	virtual vector<PII> query_heavyhitter(int threshold)
-	{
-		std::cout << "No query function." << std::endl;
-	}
 
 	virtual void status()
 	{

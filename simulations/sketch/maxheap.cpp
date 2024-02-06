@@ -8,30 +8,30 @@
 using std::map;
 
 bool
-MaxHeap::insert(int x, int v)
+MaxHeap::insert(string flow, int val)
 {	
 	if (data.size() < max_size)
 	{
-		data.insert(mp(x, v));
+		data.insert(mp(flow, val));
 		return true;
 	}
 
-	set<PII>::iterator min_ele = data.end();
-	if ((*min_ele).sc < v)
+	set<PSI>::iterator min_ele = data.end();
+	if ((*min_ele).sc < val)
 	{
 		data.erase(min_ele);
-		data.insert(mp(x, v));
+		data.insert(mp(flow, val));
 		return true;
 	}
 
 	return false;
 }
 
-set<int>
+set<string>
 MaxHeap::topk(int k)
 {
-	set<PII>::iterator it = data.begin();
-	set<int> ans;
+	set<PSI>::iterator it = data.begin();
+	set<string> ans;
 
 	if (data.size() < k)
 		k = (int)data.size();
@@ -44,11 +44,11 @@ MaxHeap::topk(int k)
 	return ans;
 }
 
-set<int>
+set<string>
 MaxHeap::heavy_hitter(int threshold)
 {
-	set<PII>::iterator it = data.begin();
-	set<int> ans;
+	set<PSI>::iterator it = data.begin();
+	set<string> ans;
 
 	while(it != data.end())
 	{

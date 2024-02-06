@@ -21,7 +21,7 @@ private:
 		}
 	};
 
-	set<PII, comp> data;
+	set<PSI, comp> data;
 	int max_size;
 public:
 	MaxHeap() { max_size = 300; };
@@ -31,10 +31,10 @@ public:
 	void init() { data.clear();}
 	void set_maxsize(int x) { max_size = x; }
 	int get_maxsize() { return max_size; }
-	bool insert(int x, int v); // try to push, return 1 if success.
-	PII top() { return data.size()==0? mp(0, 0): (*data.begin()); }
-	set<int> heavy_hitter(int threshold);	// return heavy hitter of the heap
-	set<int> topk(int k);	// return topk of the heap
+	bool insert(string flow, int val); // try to push, return 1 if success.
+	PSI top() { return data.size()==0? mp("", 0): (*data.begin()); }
+	set<string> heavy_hitter(int threshold);	// return heavy hitter of the heap
+	set<string> topk(int k);	// return topk of the heap
 };
 
 #endif // MAXHEAP_HEADER
