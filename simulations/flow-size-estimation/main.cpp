@@ -37,7 +37,65 @@ void loadData(char file[], int no)
     cout << "Loading " << flow[no].size() << " of flows. " << endl;
 }
 
-void heavyHitterDetection(vector<Sketch*> sk, map<string, int> real_ans[], double threshold, string file_name)
+void topkDetection(vector<Sketch*> sk, map<string, int> real_ans[], map<string, int> est_ans[], int top_k, string file_name)
+{
+    double precision = 0.0, recall = 0.0, f1_score = 0.0;
+
+    for (int j = 1; j <= num_sw; ++j)
+    {
+        MaxHeap rl_heap(real_ans[j].size());
+        MaxHeap est_heap(est_ans[j].size());
+
+        for (auto &it : real_ans[j])
+            rl_heap.insert(it.first, it.second);
+        
+        for (auto &it : est_ans[j])
+            est_heap.insert(it.first, it.second);
+
+        set<string> real_topk = rl_heap.topk(top_k);
+        set<string> est_topk = est_heap.topk(top_k);
+
+        double true_positives = 0.0;
+        double false_positives = 0.0;
+        double false_negatives = 0.0;
+
+        for(const auto& it : est_topk)
+        {
+            if(real_topk.find(it) != real_topk.end())
+                true_positives ++;
+            else
+                false_positives ++;
+        }
+
+        if (true_positives + false_positives == 0)
+            precision += 0.0;
+        else
+            precision += true_positives / (true_positives + false_positives);
+
+        for(const auto& it : real_topk)
+            if(est_topk.find(it) == est_topk.end())
+                false_negatives ++;
+        
+        if (real_topk.size() == 0)
+            recall += 0;
+        else
+            recall += true_positives / (true_positives + false_negatives);
+    }
+
+    precision /= num_sw;
+    recall /= num_sw;
+    if (precision + recall == 0)
+        f1_score = 0;
+    else
+        f1_score = 2 * (precision * recall) / (precision + recall);
+
+    fstream fout(file_name, ios::out | ios::app);
+    fout << "top-k precision: " <<  precision << endl;
+    fout << "top-k recall: " << recall << endl;
+    fout << "top-k f1-score: " << f1_score << endl << endl;
+}
+
+void heavyHitterDetection(vector<Sketch*> sk, map<string, int> real_ans[], map<string, int> est_ans[], double threshold, string file_name)
 {
     double re = 0.0;
     double precision = 0.0, recall = 0.0, f1_score = 0.0;
@@ -45,16 +103,10 @@ void heavyHitterDetection(vector<Sketch*> sk, map<string, int> real_ans[], doubl
 
     for(int j = 1; j <= num_sw; ++j)
     {
-        map<string, int> est_ans;
-        int size = real_ans[j].size();
-        
-        for(auto &it : real_ans[j])
-            est_ans[it.first]=sk[j]->query(it.first);
+        MaxHeap rl_heap(real_ans[j].size());
+        MaxHeap est_heap(est_ans[j].size());
 
-        MaxHeap rl_heap(size);
-        MaxHeap est_heap(size);
-
-        for(auto &it : est_ans)
+        for(auto &it : est_ans[j])
             est_heap.insert(it.first, it.second);
 
         double lc_re = 0.0;
@@ -62,10 +114,10 @@ void heavyHitterDetection(vector<Sketch*> sk, map<string, int> real_ans[], doubl
         for(auto &it : real_ans[j])
         {
             rl_heap.insert(it.first, it.second);
-            if (est_ans.find(it.first) != est_ans.end())
+            if (est_ans[j].find(it.first) != est_ans[j].end())
             {
                 lc_fsc ++;
-                lc_re += fabs(it.second - est_ans[it.first]) / it.second;
+                lc_re += fabs(it.second - est_ans[j][it.first]) / it.second;
             }
             else
             {
@@ -74,7 +126,7 @@ void heavyHitterDetection(vector<Sketch*> sk, map<string, int> real_ans[], doubl
         }
 
         re += lc_re / real_ans[j].size();
-        fsc += lc_fsc / real_ans->size();
+        fsc += lc_fsc / real_ans[j].size();
 
         set<string> real_hh = rl_heap.heavy_hitter(threshold);
         set<string> est_hh = est_heap.heavy_hitter(threshold);
@@ -114,11 +166,18 @@ void heavyHitterDetection(vector<Sketch*> sk, map<string, int> real_ans[], doubl
         f1_score = 0;
     else
         f1_score = 2 * (precision * recall) / (precision + recall);
+
+    fstream fout(file_name, ios::out | ios::app);
+    fout << "relative error: " << re << endl;
+    fout << "flow set coverage: " << fsc << endl; 
+    fout << "heavy hitter precision: " <<  precision << endl;
+    fout << "heavy hitter recall: " << recall << endl;
+    fout << "heavy hitter f1-score: " << f1_score << endl << endl;
 }
 
 void flowSizeEstimatiom(vector<Sketch*> sk, vector< pair<string, int> > flow[], string file_name, bool init_first = false)
 {
-    map<string, int> real_ans;
+    map<string, int> real_ans[num_sw+1];    // real ans
 
     for (int j = 1; j <= num_sw; ++j)
     {
@@ -128,8 +187,18 @@ void flowSizeEstimatiom(vector<Sketch*> sk, vector< pair<string, int> > flow[], 
         for (auto it = flow[j].begin(); it != flow[j].end(); ++it)
         {
             string fid = it->first;
-            real_ans[fid] += 1;
+            real_ans[j][fid] += 1;
             sk[j]->insert(fid, 1);
+        }
+    }
+
+    // query after insertion
+    map<string, int> est_ans[num_sw+1];
+    for (int j = 1; j <= num_sw; ++j)
+    {
+        for (auto it = flow[j].begin(); it != flow[j].end(); ++it)
+        {
+            est_ans[j][it->first] = sk[j]->query(it->first);
         }
     }
 }
