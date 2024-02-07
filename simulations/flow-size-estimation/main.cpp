@@ -1,7 +1,7 @@
 #include "cm.h"
 #include "hashflow.h"
 #include "ftrack.h"
-#include "mv-sketch.h"
+#include "mvsketch.h"
 
 #include <string.h>
 #include <fstream>
@@ -17,7 +17,7 @@
 using namespace std;
 
 const int num_sw = 1;     // switch
-vector< pair <string, int> > flow[num_sw + 1];      // <flow key, packet records>
+vector< string > flow[num_sw + 1];      // <flow key, packet records>
 
 void loadData(char file[], int no)
 {
@@ -28,9 +28,8 @@ void loadData(char file[], int no)
     {
         int del = buf.find(' ');
         string idt = buf.substr(0, del);
-        int rc = stoi(buf.substr(del+1));
 
-        flow[no].push_back(make_pair(idt, rc));
+        flow[no].push_back(idt);
     }
 
     cout << file << " Loading complete. " << endl;
@@ -175,7 +174,7 @@ void heavyHitterDetection(vector<Sketch*> sk, map<string, int> real_ans[], map<s
     fout << "heavy hitter f1-score: " << f1_score << endl << endl;
 }
 
-void flowSizeEstimatiom(vector<Sketch*> sk, vector< pair<string, int> > flow[], string file_name, bool init_first = false)
+void flowSizeEstimatiom(vector<Sketch*> sk, vector< string > flow[], string file_name, bool init_first = false)
 {
     map<string, int> real_ans[num_sw+1];    // real ans
 
@@ -186,7 +185,7 @@ void flowSizeEstimatiom(vector<Sketch*> sk, vector< pair<string, int> > flow[], 
         
         for (auto it = flow[j].begin(); it != flow[j].end(); ++it)
         {
-            string fid = it->first;
+            string fid = *it;
             real_ans[j][fid] += 1;
             sk[j]->insert(fid, 1);
         }
@@ -196,7 +195,7 @@ void flowSizeEstimatiom(vector<Sketch*> sk, vector< pair<string, int> > flow[], 
     map<string, int> est_ans[num_sw+1];
     for (int j = 1; j <= num_sw; ++j)
     {
-        for (auto it = flow[j].begin(); it != flow[j].end(); ++it)
+        for (auto it = real_ans[j].begin(); it != real_ans[j].end(); ++it)
         {
             est_ans[j][it->first] = sk[j]->query(it->first);
         }
