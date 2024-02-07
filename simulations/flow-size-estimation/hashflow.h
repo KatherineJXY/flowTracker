@@ -1,9 +1,9 @@
 #ifndef HASH_FLOW_HEADER
 #define HASH_FLOW_HEADER
 
-#include "sketch.h"
-#include "maxheap.h"
-#include "BOBHash32.h"
+#include "utils/sketch.h"
+#include "utils/maxheap.h"
+#include "utils/BOBHash32.h"
 
 class HashFlow : public Sketch
 {
