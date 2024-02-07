@@ -12,7 +12,6 @@ private:
     {
         int flow_count;
         int sentinel_count;
-        int flow_records;
     };
 
     int flow_filter_size, main_table_size, num_hash, row_size;
@@ -31,8 +30,6 @@ public:
     
     void insert(string flow, int val);
     int query (string flow);
-    
-    void aggregateFlowRecord(int pos, int val);     // here, determine the flow record statistics
 };
 
 #endif/*FTRACK_HEADER*/

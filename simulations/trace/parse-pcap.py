@@ -1,5 +1,6 @@
 import scapy.all as scapy
 import numpy as np
+import os
 
 def extract_five_tuple(packet):
     if scapy.IP in packet:
@@ -36,4 +37,10 @@ def parse_pcap(file_path, output_file):
                 output_line = f"{five_tuple[0]},{five_tuple[1]},{five_tuple[2]},{five_tuple[3]},{five_tuple[4]} {poisson_value}\n"
                 output.write(output_line)
 
-parse_pcap(r'E:\jxy\isp2\mawi_00000_20231201130000.pcap', r'E:\jxy\isp2\mawi.csv')
+if __name__ == '__main__':
+    category_path = r'E:\jxy\campus'
+    output_file = r'E:\jxy\campus\campus.csv'
+    for filename in os.listdir(category_path):
+        if filename.endswith("pcap"):
+            file_path = os.path.join(category_path, filename)
+            parse_pcap(file_path, output_file)
