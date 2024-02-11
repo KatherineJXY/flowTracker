@@ -1,10 +1,10 @@
-#include "ftrack.h"
+#include "ftrack_average.h"
 #include <cstdio>
 #include <cmath>
 #include <cstring>
 #include <climits>
 
-FlowTracker::FlowTracker(int flow_filter_size, int main_table_size, int num_hash) :
+FlowTrackerAve::FlowTrackerAve(int flow_filter_size, int main_table_size, int num_hash) :
 flow_filter_size (flow_filter_size), main_table_size (main_table_size), num_hash (num_hash)
 {
     sprintf (name, "FlowTracker");
@@ -22,7 +22,7 @@ flow_filter_size (flow_filter_size), main_table_size (main_table_size), num_hash
     row_size = flow_filter_size / num_hash;
 }
 
-FlowTracker::~FlowTracker()
+FlowTrackerAve::~FlowTrackerAve()
 {
     if (main_table)
         delete [] main_table;
@@ -35,7 +35,7 @@ FlowTracker::~FlowTracker()
 }
 
 void
-FlowTracker::init()
+FlowTrackerAve::init()
 {
     memset(main_table, 0, main_table_size * sizeof(struct mainTableRecords));
     memset(flow_filter, 0, flow_filter_size * sizeof(int));
@@ -49,14 +49,14 @@ FlowTracker::init()
 }
 
 void
-FlowTracker::status()
+FlowTrackerAve::status()
 {
     printf("Flow filter: counter arrays %d \t hash: %d\n", flow_filter_size, num_hash);
     printf("Main table: buckets %d \n", main_table_size);
 }
 
 void
-FlowTracker::insert(string flow, int val)
+FlowTrackerAve::insert(string flow, int val)
 {
     // read flow filter
     int fcnt = INT_MIN;
@@ -126,7 +126,7 @@ FlowTracker::insert(string flow, int val)
 }
 
 double
-FlowTracker::query_average(string flow)
+FlowTrackerAve::query_average(string flow)
 {
     double ans = 0.0;
     

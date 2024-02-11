@@ -5,7 +5,7 @@
 #include "utils/maxheap.h"
 #include "utils/BOBHash32.h"
 
-class FlowTracker : public Sketch
+class FlowTrackerAve : public Sketch
 {
 private:
     struct mainTableRecords
@@ -23,8 +23,8 @@ private:
     BOBHash32 *flow_filter_hashes, *main_table_hash;
     
 public:
-    FlowTracker(int flow_filter_size, int main_table_size, int num_hash);
-    ~FlowTracker();
+    FlowTrackerAve(int flow_filter_size, int main_table_size, int num_hash);
+    ~FlowTrackerAve();
     
     void init();
     void status();
