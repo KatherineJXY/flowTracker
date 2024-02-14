@@ -113,15 +113,9 @@ void heavyHitterDetection(vector<Sketch*> sk, map<string, int> real_ans[], map<s
         for(auto &it : real_ans[j])
         {
             rl_heap.insert(it.first, it.second);
-            if (est_ans[j].find(it.first) != est_ans[j].end())
-            {
+            lc_re += fabs(it.second - est_ans[j][it.first]) / it.second;
+            if (est_ans[j][it.first] != 0)
                 lc_fsc ++;
-                lc_re += fabs(it.second - est_ans[j][it.first]) / it.second;
-            }
-            else
-            {
-                lc_re += 1.0;
-            }
         }
 
         re += lc_re / real_ans[j].size();
@@ -216,7 +210,7 @@ int main(int argc, char *argv[])
     string write_to = "../results/ftrack/flow-size-estimation.txt";
     fstream fout(write_to, ios::out | ios::app);
 
-    for (int i = 6; i <=12; ++i)
+    for (int i = 6; i <= 12; ++i)
     {
         int mem = pow(2, i) * 1024 * 8; // 2^i KB
 

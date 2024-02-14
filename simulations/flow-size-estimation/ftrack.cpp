@@ -67,6 +67,7 @@ FlowTracker::insert(string flow, int val)
     {
         int pos = flow_filter_hashes[i].run(flow.c_str(), flow.length()) % row_size + base;
         save_pos[i] = pos;
+        // cout << "pos " << i << ": " << pos << endl;
         
         if (flow_filter[pos] > fcnt)
             fcnt = flow_filter[pos];
@@ -80,10 +81,11 @@ FlowTracker::insert(string flow, int val)
     
     if (fcnt == 0 || fcnt == 1) // 0 for new flow, 1 for flow has been evicted
     {
+        // cout << "new flow" << endl;
         main_table[resident_pos].sentinel_count ++;
         fu = main_table[resident_pos].sentinel_count + 1;
         
-        if(main_table[resident_pos].flow_count != 0)  // not empty bucket
+        if(main_table[resident_pos].sentinel_count != 1)  // not empty bucket
         {
             int step_width = (1 << (main_table[resident_pos].sentinel_count - 1)) - 1;
             resident_pos = (resident_pos + step_width) % main_table_size;
@@ -96,29 +98,40 @@ FlowTracker::insert(string flow, int val)
         
         if (fu != 0)    // successfully find a resident bucket
             main_table[resident_pos].flow_count ++;
+            // cout << "successfully find a resident bucket!";
+            // cout << "resident pos: " << resident_pos << "\t sentinel counter: " << main_table[resident_pos].sentinel_count << "\t flow count: " << main_table[resident_pos].flow_count << endl;
     }
     else    // existing flow
     {
+        // cout << "existing flow" << endl;
         int step_width = (1 << (fcnt - 2)) - 1;
-        int resident_pos = (resident_pos + step_width) % main_table_size;
+        resident_pos = (resident_pos + step_width) % main_table_size;
+        // cout << "step width is " << step_width << "\t resident pos is " << resident_pos << endl;
         
         main_table[resident_pos].flow_count ++;
-        if (main_table[resident_pos].flow_count < main_table [resident_pos].sentinel_count)
+        if (main_table[resident_pos].flow_count < main_table[resident_pos].sentinel_count)
         {
             // evade
             main_table[resident_pos].sentinel_count = 0;
             fu = 1;
+            cout << "evading!!!" << endl;
         }
     }
     
     // update flow filter
+    // cout << "fu: " << fu << endl;
     if (fu != 0)
     {
+        // cout << "update flow filter: " << endl;
         for (i = 0; i < num_hash; i++)
         {
             int pos = save_pos[i];
-            if (flow_filter[pos] == 0 || flow_filter[pos] > fu)
+            if (flow_filter[pos] == 0 || flow_filter[pos] > fu) {
+                // cout << pos << ": ";
+                // cout << flow_filter[pos];
                 flow_filter[pos] = fu;
+                // cout << "\t" << flow_filter[pos] << endl;
+            }
         }
     }
 }
