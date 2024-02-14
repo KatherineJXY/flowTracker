@@ -175,8 +175,8 @@ void flowSizeEstimatiom(vector<Sketch*> sk, vector< string > flow[], string file
     for (int j = 1; j <= num_sw; ++j)
     {
         if (init_first)
-            sk[j]->init();
-        
+            sk[j]->init();  
+            
         for (auto it = flow[j].begin(); it != flow[j].end(); ++it)
         {
             string fid = *it;
@@ -184,7 +184,7 @@ void flowSizeEstimatiom(vector<Sketch*> sk, vector< string > flow[], string file
             sk[j]->insert(fid, 1);
         }
     }
-
+    
     // query after insertion
     map<string, int> est_ans[num_sw+1];
     for (int j = 1; j <= num_sw; ++j)
@@ -207,10 +207,10 @@ int main(int argc, char *argv[])
     cout << read_file << endl;
     loadData((char*)read_file.c_str(), num_sw);
 
-    string write_to = "../results/ftrack/flow-size-estimation.txt";
+    string write_to = "../results/ftrack/campus/flow-size-estimation.txt";
     fstream fout(write_to, ios::out | ios::app);
 
-    for (int i = 6; i <= 12; ++i)
+    for (int i = 6; i <= 6; ++i)
     {
         int mem = pow(2, i) * 1024 * 8; // 2^i KB
 
@@ -219,11 +219,17 @@ int main(int argc, char *argv[])
         for (int j = 0; j <= num_sw; ++j)
         {
             int buk = mem / 32;
-            FlowTracker *ftrack = new FlowTracker(mem/4, mem/4, 2);
+            FlowTracker *ftrack = new FlowTracker(buk/3, buk/3, 2);
             sk.push_back(ftrack);
             // int buk = mem / 32;
             // CMSketch *cms = new CMSketch(buk, 3);
             // sk.push_back(cms);
+            // int buk = mem / 96;
+            // HashFlow *hashflow = new HashFlow(buk/2, buk/2, 2);
+            // sk.push_back(hashflow);
+            // int buk = mem / 128;
+            // MVSketch *mvsketch = new MVSketch(buk, 3);
+            // sk.push_back(mvsketch);
         }
 
         fout << "The memory usage is 2^" << i << "KB. " << endl;
