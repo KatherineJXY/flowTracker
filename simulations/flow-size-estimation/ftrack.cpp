@@ -88,13 +88,14 @@ FlowTracker::insert(string flow, int val)
         
         if(main_table[resident_pos].sentinel_count != 1)  // not empty bucket
         {
-            int step_width = (1 << (main_table[resident_pos].sentinel_count - 1)) - 1;
+            // int step_width = (1 << (main_table[resident_pos].sentinel_count - 1)) - 1;
+            int step_width = main_table[resident_pos].sentinel_count - 1;
             resident_pos = (resident_pos + step_width) % main_table_size;
             
-            if (main_table[resident_pos].flow_count != 0)   // substitute bucket is non-empty
+            main_table[resident_pos].sentinel_count ++;
+
+            if (main_table[resident_pos].sentinel_count != 1)   // substitute bucket is non-empty
                 fu = 0;
-            else
-                main_table[resident_pos].sentinel_count ++;
         }
         
         if (fu != 0)    // successfully find a resident bucket
@@ -102,7 +103,8 @@ FlowTracker::insert(string flow, int val)
     }
     else    // existing flow
     {
-        int step_width = (1 << (fcnt - 2)) - 1;
+        // int step_width = (1 << (fcnt - 2)) - 1;
+        int step_width = fcnt - 2;
         resident_pos = (resident_pos + step_width) % main_table_size;
     
         main_table[resident_pos].flow_count ++;
@@ -120,7 +122,7 @@ FlowTracker::insert(string flow, int val)
         for (i = 0; i < num_hash; i++)
         {
             int pos = save_pos[i];
-            if (flow_filter[pos] == 0 || flow_filter[pos] > fu) {
+            if (flow_filter[pos] == 0 || flow_filter[pos] == 1 || flow_filter[pos] > fu) {
                 flow_filter[pos] = fu;
             }
         }
@@ -152,13 +154,12 @@ FlowTracker::query (string flow)
     int resident_pos = main_table_hash->run(flow.c_str(), flow.length()) % main_table_size;
     if (fcnt > 1)
     {
-        int step_width = (1 << (fcnt - 2)) - 1;
+        // int step_width = (1 << (fcnt - 2)) - 1;
+        int step_width = fcnt - 2;
         resident_pos = (resident_pos + step_width) % main_table_size;
         
         // querying flow count
         ans = main_table[resident_pos].flow_count;
-        if (ans == 0)
-            cout << main_table[resident_pos].flow_count << "\t" <<main_table[resident_pos].sentinel_count << endl;
     }
     
     return ans;

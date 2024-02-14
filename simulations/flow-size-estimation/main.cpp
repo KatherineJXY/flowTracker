@@ -19,17 +19,24 @@ using namespace std;
 const int num_sw = 1;     // switch
 vector< string > flow[num_sw + 1];      // <flow key, packet records>
 
-void loadData(char file[], int no)
+void loadData(char file[], int no, int num_line = -1)
 {
     ifstream is(file, ios::in);
     string buf;
+    int count = 0;
 
-    while ((getline(is, buf)))
+    while (num_line == -1 || count < num_line)
     {
+        if (!getline(is, buf))
+        {
+            break;
+        }
         int del = buf.find(' ');
         string idt = buf.substr(0, del);
 
         flow[no].push_back(idt);
+        count ++;
+
     }
 
     cout << file << " Loading complete. " << endl;
@@ -102,8 +109,8 @@ void heavyHitterDetection(vector<Sketch*> sk, map<string, int> real_ans[], map<s
 
     for(int j = 1; j <= num_sw; ++j)
     {
-        MaxHeap rl_heap(real_ans[j].size());
-        MaxHeap est_heap(est_ans[j].size());
+        MaxHeap rl_heap(real_ans[j].size()*0.1);
+        MaxHeap est_heap(est_ans[j].size()*0.1);
 
         for(auto &it : est_ans[j])
             est_heap.insert(it.first, it.second);
@@ -176,7 +183,7 @@ void flowSizeEstimatiom(vector<Sketch*> sk, vector< string > flow[], string file
     {
         if (init_first)
             sk[j]->init();  
-            
+
         for (auto it = flow[j].begin(); it != flow[j].end(); ++it)
         {
             string fid = *it;
@@ -184,7 +191,7 @@ void flowSizeEstimatiom(vector<Sketch*> sk, vector< string > flow[], string file
             sk[j]->insert(fid, 1);
         }
     }
-    
+
     // query after insertion
     map<string, int> est_ans[num_sw+1];
     for (int j = 1; j <= num_sw; ++j)
@@ -195,7 +202,8 @@ void flowSizeEstimatiom(vector<Sketch*> sk, vector< string > flow[], string file
         }
     }
 
-    heavyHitterDetection(sk, real_ans, est_ans, 8, file_name);
+    heavyHitterDetection(sk, real_ans, est_ans, 5, file_name);
+    // topkDetection(sk, real_ans, est_ans, 20, file_name);
 }
 
 int main(int argc, char *argv[])
@@ -203,14 +211,15 @@ int main(int argc, char *argv[])
     srand(2024);
     
     // load data
-    string read_file = "../../traces/pcap/campus.csv";
+    string read_file = "../../traces/pcap/mawi.csv";
     cout << read_file << endl;
-    loadData((char*)read_file.c_str(), num_sw);
 
-    string write_to = "../results/ftrack/campus/flow-size-estimation.txt";
+    // heavy hitter estimation
+    loadData((char*)read_file.c_str(), num_sw);
+    string write_to = "../results/ftrack/isp/flow-size-estimation.txt";
     fstream fout(write_to, ios::out | ios::app);
 
-    for (int i = 6; i <= 6; ++i)
+    for (int i = 10; i <= 16; ++i)
     {
         int mem = pow(2, i) * 1024 * 8; // 2^i KB
 
@@ -218,16 +227,16 @@ int main(int argc, char *argv[])
 
         for (int j = 0; j <= num_sw; ++j)
         {
-            int buk = mem / 32;
-            FlowTracker *ftrack = new FlowTracker(buk/3, buk/3, 2);
+            int buk = mem / 64;
+            FlowTracker *ftrack = new FlowTracker(3*buk, buk, 2);
             sk.push_back(ftrack);
             // int buk = mem / 32;
             // CMSketch *cms = new CMSketch(buk, 3);
             // sk.push_back(cms);
-            // int buk = mem / 96;
-            // HashFlow *hashflow = new HashFlow(buk/2, buk/2, 2);
+            // int buk = mem / 142;
+            // HashFlow *hashflow = new HashFlow(buk, buk, 3);
             // sk.push_back(hashflow);
-            // int buk = mem / 128;
+            // int buk = mem / 168;
             // MVSketch *mvsketch = new MVSketch(buk, 3);
             // sk.push_back(mvsketch);
         }
@@ -237,4 +246,35 @@ int main(int argc, char *argv[])
 
         flowSizeEstimatiom(sk, flow, write_to, true);
     }
+
+    // top-k estimation
+    // string write_to = "../results/ftrack/campus/topk-flow-size-estimation.txt";
+    // fstream fout(write_to, ios::out | ios::app);
+    // for (int i = 8; i <= 14; i++)
+    // {
+    //     int mem = pow(2, 10) * 1024 * 8; // 2^i KB
+
+    //     vector<Sketch*> sk;
+    //     for (int j = 0; j <= num_sw; ++j)
+    //     {
+    //         flow[j].clear();
+    //         int buk = mem / 64;
+    //         FlowTracker *ftrack = new FlowTracker(3*buk, buk, 2);
+    //         sk.push_back(ftrack);
+    //         // int buk = mem / 32;
+    //         // CMSketch *cms = new CMSketch(buk, 3);
+    //         // sk.push_back(cms);
+    //         // int buk = mem / 142;
+    //         // HashFlow *hashflow = new HashFlow(buk, buk, 3);
+    //         // sk.push_back(hashflow);
+    //         // int buk = mem / 168;
+    //         // MVSketch *mvsketch = new MVSketch(buk, 3);
+    //         // sk.push_back(mvsketch);
+    //     }
+
+    //     loadData((char*)read_file.c_str(), num_sw, 1000000*i);
+
+    //     fout << "Flow size is " << i << "M. " << endl;
+    //     flowSizeEstimatiom(sk, flow, write_to, true);
+    // }
 }

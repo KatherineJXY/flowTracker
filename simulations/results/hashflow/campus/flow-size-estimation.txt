@@ -1,48 +1,48 @@
 The memory usage is 2^6KB. 
-relative error: 0.801433
-flow set coverage: 0.207208
-heavy hitter precision: 0.999568
-heavy hitter recall: 0.720561
-heavy hitter f1-score: 0.837437
+relative error: 0.735096
+flow set coverage: 0.274127
+heavy hitter precision: 0.999293
+heavy hitter recall: 0.880997
+heavy hitter f1-score: 0.936424
 
 The memory usage is 2^7KB. 
-relative error: 0.638842
-flow set coverage: 0.37237
+relative error: 0.553228
+flow set coverage: 0.458679
 heavy hitter precision: 1
-heavy hitter recall: 0.906854
-heavy hitter f1-score: 0.951152
+heavy hitter recall: 0.980062
+heavy hitter f1-score: 0.989931
 
 The memory usage is 2^8KB. 
-relative error: 0.426401
-flow set coverage: 0.587519
+relative error: 0.327673
+flow set coverage: 0.683826
 heavy hitter precision: 1
-heavy hitter recall: 0.978816
-heavy hitter f1-score: 0.989295
+heavy hitter recall: 0.997819
+heavy hitter f1-score: 0.998908
 
 The memory usage is 2^9KB. 
-relative error: 0.21771
-flow set coverage: 0.789204
-heavy hitter precision: 1
-heavy hitter recall: 0.995327
-heavy hitter f1-score: 0.997658
-
-The memory usage is 2^10KB. 
-relative error: 0.080055
-flow set coverage: 0.921833
+relative error: 0.1021
+flow set coverage: 0.900629
 heavy hitter precision: 1
 heavy hitter recall: 0.999065
 heavy hitter f1-score: 0.999532
 
-The memory usage is 2^11KB. 
-relative error: 0.0234016
-flow set coverage: 0.976981
+The memory usage is 2^10KB. 
+relative error: 0.0177847
+flow set coverage: 0.982585
 heavy hitter precision: 1
-heavy hitter recall: 0.999377
-heavy hitter f1-score: 0.999688
+heavy hitter recall: 1
+heavy hitter f1-score: 1
+
+The memory usage is 2^11KB. 
+relative error: 0.00227767
+flow set coverage: 0.997742
+heavy hitter precision: 1
+heavy hitter recall: 1
+heavy hitter f1-score: 1
 
 The memory usage is 2^12KB. 
-relative error: 0.0051466
-flow set coverage: 0.995042
+relative error: 0.00028219
+flow set coverage: 0.999718
 heavy hitter precision: 1
 heavy hitter recall: 1
 heavy hitter f1-score: 1

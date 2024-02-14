@@ -1,0 +1,2 @@
+The memory usage is 2^10KB. 
+The memory usage is 2^10KB. 
