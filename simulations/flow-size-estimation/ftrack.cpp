@@ -85,7 +85,7 @@ FlowTracker::insert(string flow, int val)
         
         if(main_table[resident_pos].flow_count != 0)  // not empty bucket
         {
-            int step_width = 1 << (main_table[resident_pos].sentinel_count - 1) - 1;
+            int step_width = (1 << (main_table[resident_pos].sentinel_count - 1)) - 1;
             resident_pos = (resident_pos + step_width) % main_table_size;
             
             if (main_table[resident_pos].flow_count != 0)   // substitute bucket is non-empty
@@ -99,7 +99,7 @@ FlowTracker::insert(string flow, int val)
     }
     else    // existing flow
     {
-        int step_width = 1 << (fcnt - 2) - 1;
+        int step_width = (1 << (fcnt - 2)) - 1;
         int resident_pos = (resident_pos + step_width) % main_table_size;
         
         main_table[resident_pos].flow_count ++;
@@ -146,7 +146,7 @@ FlowTracker::query (string flow)
     int resident_pos = main_table_hash->run(flow.c_str(), flow.length()) % main_table_size;
     if (fcnt > 1)
     {
-        int step_width = 1 << (fcnt - 2) - 1;
+        int step_width = (1 << (fcnt - 2)) - 1;
         resident_pos = (resident_pos + step_width) % main_table_size;
         
         // querying flow count

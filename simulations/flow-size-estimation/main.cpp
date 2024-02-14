@@ -147,14 +147,14 @@ void heavyHitterDetection(vector<Sketch*> sk, map<string, int> real_ans[], map<s
         else
             precision += true_positives / (true_positives + false_positives);
 
-        for(const auto& it : real_hh)
-            if(est_hh.find(it) == est_hh.end())
-                false_negatives ++;
+        // for(const auto& it : real_hh)
+        //     if(est_hh.find(it) == est_hh.end())
+        //         false_negatives ++;
         
         if (real_hh.size() == 0)
             recall += 0;
         else
-            recall += true_positives / (true_positives + false_negatives);
+            recall += true_positives / real_hh.size();
     }
 
     re /= num_sw;
@@ -200,6 +200,8 @@ void flowSizeEstimatiom(vector<Sketch*> sk, vector< string > flow[], string file
             est_ans[j][it->first] = sk[j]->query(it->first);
         }
     }
+
+    heavyHitterDetection(sk, real_ans, est_ans, 8, file_name);
 }
 
 int main(int argc, char *argv[])
@@ -207,12 +209,12 @@ int main(int argc, char *argv[])
     srand(2024);
     
     // load data
-    string read_file = "";
+    string read_file = "../../traces/pcap/campus.csv";
     cout << read_file << endl;
     loadData((char*)read_file.c_str(), num_sw);
 
-    string write_to = "";
-    fstream fout(write_to, ios::out || ios::app);
+    string write_to = "../results/ftrack/flow-size-estimation.txt";
+    fstream fout(write_to, ios::out | ios::app);
 
     for (int i = 6; i <=12; ++i)
     {
@@ -223,11 +225,16 @@ int main(int argc, char *argv[])
         for (int j = 0; j <= num_sw; ++j)
         {
             int buk = mem / 32;
-            FlowTracker *ftrack = new FlowTracker(mem/4, 3*mem/4, 3);
+            FlowTracker *ftrack = new FlowTracker(mem/4, mem/4, 2);
             sk.push_back(ftrack);
+            // int buk = mem / 32;
+            // CMSketch *cms = new CMSketch(buk, 3);
+            // sk.push_back(cms);
         }
 
         fout << "The memory usage is 2^" << i << "KB. " << endl;
         cout << "The memory usage is 2^" << i << "KB. " << endl;
+
+        flowSizeEstimatiom(sk, flow, write_to, true);
     }
 }

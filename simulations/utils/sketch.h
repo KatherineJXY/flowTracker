@@ -36,11 +36,19 @@ public:
     virtual int query(string flow)
     {
         std::cout << "No query function." << std::endl;
+		return 0;
     }
 
 	virtual double query_average(string flow)
 	{
 		std::cout << "No query average function." << std::endl;
+		return 0.0;
+	}
+
+	virtual int query_max(string flow)
+	{
+		std::cout << "No query max function." << std::endl;
+		return 0;
 	}
 
 	virtual void status()

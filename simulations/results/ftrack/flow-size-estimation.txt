@@ -1,0 +1,49 @@
+The memory usage is 2^6KB. 
+relative error: 0.715823
+flow set coverage: 1
+heavy hitter precision: 0
+heavy hitter recall: 0
+heavy hitter f1-score: 0
+
+The memory usage is 2^7KB. 
+relative error: 0.693101
+flow set coverage: 1
+heavy hitter precision: 0
+heavy hitter recall: 0
+heavy hitter f1-score: 0
+
+The memory usage is 2^8KB. 
+relative error: 0.681127
+flow set coverage: 1
+heavy hitter precision: 0
+heavy hitter recall: 0
+heavy hitter f1-score: 0
+
+The memory usage is 2^9KB. 
+relative error: 0.673646
+flow set coverage: 1
+heavy hitter precision: 0
+heavy hitter recall: 0
+heavy hitter f1-score: 0
+
+The memory usage is 2^10KB. 
+relative error: 0.669967
+flow set coverage: 1
+heavy hitter precision: 0
+heavy hitter recall: 0
+heavy hitter f1-score: 0
+
+The memory usage is 2^11KB. 
+relative error: 0.668232
+flow set coverage: 1
+heavy hitter precision: 0
+heavy hitter recall: 0
+heavy hitter f1-score: 0
+
+The memory usage is 2^12KB. 
+relative error: 0.66747
+flow set coverage: 1
+heavy hitter precision: 0
+heavy hitter recall: 0
+heavy hitter f1-score: 0
+
