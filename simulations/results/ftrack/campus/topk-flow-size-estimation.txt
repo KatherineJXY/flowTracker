@@ -1,0 +1,35 @@
+The memory usage is 2^6KB. 
+top-k precision: 0.415323
+top-k recall: 0.415323
+top-k f1-score: 0.415323
+
+The memory usage is 2^7KB. 
+top-k precision: 0.717742
+top-k recall: 0.717742
+top-k f1-score: 0.717742
+
+The memory usage is 2^8KB. 
+top-k precision: 0.823387
+top-k recall: 0.823387
+top-k f1-score: 0.823387
+
+The memory usage is 2^9KB. 
+top-k precision: 0.905242
+top-k recall: 0.905242
+top-k f1-score: 0.905242
+
+The memory usage is 2^10KB. 
+top-k precision: 0.967339
+top-k recall: 0.967339
+top-k f1-score: 0.967339
+
+The memory usage is 2^11KB. 
+top-k precision: 0.983871
+top-k recall: 0.983871
+top-k f1-score: 0.983871
+
+The memory usage is 2^12KB. 
+top-k precision: 0.993952
+top-k recall: 0.993952
+top-k f1-score: 0.993952
+
