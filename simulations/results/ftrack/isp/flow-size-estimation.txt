@@ -25,3 +25,17 @@ flow set coverage: 0.892581
 heavy hitter precision: 0.868428
 heavy hitter recall: 0.991365
 heavy hitter f1-score: 0.925833
+
+The memory usage is 2^16KB. 
+relative error: 0.217388
+flow set coverage: 0.966178
+heavy hitter precision: 0.965784
+heavy hitter recall: 0.998516
+heavy hitter f1-score: 0.981877
+
+The memory usage is 2^17KB. 
+relative error: 0.0886621
+flow set coverage: 0.990432
+heavy hitter precision: 0.989388
+heavy hitter recall: 0.999742
+heavy hitter f1-score: 0.994538

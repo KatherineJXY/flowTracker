@@ -178,7 +178,7 @@ void heavyHitterDetection(vector<Sketch*> sk, map<string, int> real_ans[], map<s
 void flowSizeEstimatiom(vector<Sketch*> sk, vector< string > flow[], string file_name, bool init_first = false)
 {
     map<string, int> real_ans[num_sw+1];    // real ans
-    cout << "I am here" << endl;
+    
     for (int j = 1; j <= num_sw; ++j)
     {
         if (init_first)
