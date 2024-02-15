@@ -178,7 +178,8 @@ void heavyHitterDetection(vector<Sketch*> sk, map<string, int> real_ans[], map<s
 void flowSizeEstimatiom(vector<Sketch*> sk, vector< string > flow[], string file_name, bool init_first = false)
 {
     map<string, int> real_ans[num_sw+1];    // real ans
-    
+    int topk;
+
     for (int j = 1; j <= num_sw; ++j)
     {
         if (init_first)
@@ -200,10 +201,11 @@ void flowSizeEstimatiom(vector<Sketch*> sk, vector< string > flow[], string file
         {
             est_ans[j][it->first] = sk[j]->query(it->first);
         }
+        topk = real_ans[j].size() * 0.1;
     }
 
-    // heavyHitterDetection(sk, real_ans, est_ans, 5, file_name);
-    topkDetection(sk, real_ans, est_ans, 20, file_name);
+//    heavyHitterDetection(sk, real_ans, est_ans, 5, file_name);
+     topkDetection(sk, real_ans, est_ans, topk, file_name);
 }
 
 int main(int argc, char *argv[])
@@ -211,70 +213,70 @@ int main(int argc, char *argv[])
     srand(2024);
     
     // load data
-    string read_file = "../../traces/pcap/campus.csv";
+    string read_file = "../../traces/univ1.csv";
     cout << read_file << endl;
 
     // heavy hitter estimation
-    // loadData((char*)read_file.c_str(), num_sw);
-    // string write_to = "../results/cmsketch/isp/flow-size-estimation.txt";
-    // fstream fout(write_to, ios::out | ios::app);
-
-    // for (int i = 12; i <= 18; ++i)
-    // {
-    //     int mem = pow(2, i) * 1024 * 8; // 2^i KB
-
-    //     vector<Sketch*> sk;
-
-    //     for (int j = 0; j <= num_sw; ++j)
-    //     {
-    //         // int buk = mem / 64;
-    //         // FlowTracker *ftrack = new FlowTracker(3*buk, buk, 2);
-    //         // sk.push_back(ftrack);
-    //         int buk = mem / 32;
-    //         CMSketch *cms = new CMSketch(buk, 3);
-    //         sk.push_back(cms);
-    //         // int buk = mem / 142;
-    //         // HashFlow *hashflow = new HashFlow(buk, buk, 3);
-    //         // sk.push_back(hashflow);
-    //         // int buk = mem / 168;
-    //         // MVSketch *mvsketch = new MVSketch(buk, 3);
-    //         // sk.push_back(mvsketch);
-    //     }
-
-    //     fout << "The memory usage is 2^" << i << "KB. " << endl;
-    //     cout << "The memory usage is 2^" << i << "KB. " << endl;
-
-    //     flowSizeEstimatiom(sk, flow, write_to, true);
-    // }
-
-    // top-k estimation
-    string write_to = "../results/ftrack/campus/topk-flow-size-estimation.txt";
+    loadData((char*)read_file.c_str(), num_sw);
+    string write_to = "../results/ftrack/data-center/topk-flow-size-estimation.txt";
     fstream fout(write_to, ios::out | ios::app);
-    for (int i = 8; i <= 14; i++)
+
+    for (int i = 10; i <= 16; ++i)
     {
-        int mem = pow(6, 12) * 1024 * 8; // 2^i KB
+        int mem = pow(2, i) * 1024 * 8; // 2^i KB
 
         vector<Sketch*> sk;
+
         for (int j = 0; j <= num_sw; ++j)
         {
-            flow[j].clear();
-            int buk = mem / 64;
-            FlowTracker *ftrack = new FlowTracker(3*buk, buk, 2);
-            sk.push_back(ftrack);
-            // int buk = mem / 32;
-            // CMSketch *cms = new CMSketch(buk, 3);
-            // sk.push_back(cms);
-            // int buk = mem / 142;
-            // HashFlow *hashflow = new HashFlow(buk, buk, 3);
-            // sk.push_back(hashflow);
-            // int buk = mem / 168;
-            // MVSketch *mvsketch = new MVSketch(buk, 3);
-            // sk.push_back(mvsketch);
+             int buk = mem / 64;
+             FlowTracker *ftrack = new FlowTracker(3*buk, buk, 2);
+             sk.push_back(ftrack);
+//            int buk = mem / 32;
+//            CMSketch *cms = new CMSketch(buk, 3);
+//            sk.push_back(cms);
+//             int buk = mem / 142;
+//             HashFlow *hashflow = new HashFlow(buk, buk, 3);
+//             sk.push_back(hashflow);
+//             int buk = mem / 168;
+//             MVSketch *mvsketch = new MVSketch(buk, 3);
+//             sk.push_back(mvsketch);
         }
 
-        loadData((char*)read_file.c_str(), num_sw, 1000000*i);
+        fout << "The memory usage is 2^" << i << "KB. " << endl;
+        cout << "The memory usage is 2^" << i << "KB. " << endl;
 
-        fout << "Flow size is " << i << "M. " << endl;
         flowSizeEstimatiom(sk, flow, write_to, true);
     }
+
+    // top-k estimation
+//     string write_to = "../results/cmsketch/isp/fs-topk-flow-size-estimation.txt";
+//     fstream fout(write_to, ios::out | ios::app);
+//     for (int i = 5; i <= 10; i++)
+//     {
+//         int mem = pow(2, 15) * 1024 * 8; // 2^i KB
+//
+//         vector<Sketch*> sk;
+//         for (int j = 0; j <= num_sw; ++j)
+//         {
+//             flow[j].clear();
+////             int buk = mem / 64;
+////             FlowTracker *ftrack = new FlowTracker(3*buk, buk, 2);
+////             sk.push_back(ftrack);
+//              int buk = mem / 32;
+//              CMSketch *cms = new CMSketch(buk, 3);
+//              sk.push_back(cms);
+////              int buk = mem / 142;
+////              HashFlow *hashflow = new HashFlow(buk, buk, 3);
+////              sk.push_back(hashflow);
+////              int buk = mem / 168;
+////              MVSketch *mvsketch = new MVSketch(buk, 3);
+////              sk.push_back(mvsketch);
+//         }
+//
+//         loadData((char*)read_file.c_str(), num_sw, 1000000*i);
+//
+//         fout << "Flow size is " << i << "M. " << endl;
+//         flowSizeEstimatiom(sk, flow, write_to, true);
+//     }
 }
