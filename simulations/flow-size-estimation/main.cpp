@@ -109,11 +109,11 @@ void heavyHitterDetection(vector<Sketch*> sk, map<string, int> real_ans[], map<s
 
     for(int j = 1; j <= num_sw; ++j)
     {
-        MaxHeap rl_heap(real_ans[j].size()*0.1);
-        MaxHeap est_heap(est_ans[j].size()*0.1);
+        MaxHeap rl_heap(real_ans[j].size()*0.2);
+        MaxHeap est_heap(est_ans[j].size()*0.2);
 
         for(auto &it : est_ans[j])
-            est_heap.insert(it.first, it.second);
+            est_heap.insert(it.first, it.second);   
 
         double lc_re = 0.0;
         double lc_fsc = 0.0;
@@ -130,7 +130,7 @@ void heavyHitterDetection(vector<Sketch*> sk, map<string, int> real_ans[], map<s
 
         set<string> real_hh = rl_heap.heavy_hitter(threshold);
         set<string> est_hh = est_heap.heavy_hitter(threshold);
-
+        
         double true_positives = 0.0;
         double false_positives = 0.0;
         double false_negatives = 0.0;
@@ -142,7 +142,7 @@ void heavyHitterDetection(vector<Sketch*> sk, map<string, int> real_ans[], map<s
             else
                 false_positives ++;
         }
-
+        
         if (true_positives + false_positives == 0)
             precision += 0.0;
         else
@@ -178,7 +178,7 @@ void heavyHitterDetection(vector<Sketch*> sk, map<string, int> real_ans[], map<s
 void flowSizeEstimatiom(vector<Sketch*> sk, vector< string > flow[], string file_name, bool init_first = false)
 {
     map<string, int> real_ans[num_sw+1];    // real ans
-
+    cout << "I am here" << endl;
     for (int j = 1; j <= num_sw; ++j)
     {
         if (init_first)
@@ -216,10 +216,10 @@ int main(int argc, char *argv[])
 
     // heavy hitter estimation
     loadData((char*)read_file.c_str(), num_sw);
-    string write_to = "../results/ftrack/isp/flow-size-estimation.txt";
+    string write_to = "../results/cmsketch/isp/flow-size-estimation.txt";
     fstream fout(write_to, ios::out | ios::app);
 
-    for (int i = 10; i <= 16; ++i)
+    for (int i = 12; i <= 18; ++i)
     {
         int mem = pow(2, i) * 1024 * 8; // 2^i KB
 
@@ -227,12 +227,12 @@ int main(int argc, char *argv[])
 
         for (int j = 0; j <= num_sw; ++j)
         {
-            int buk = mem / 64;
-            FlowTracker *ftrack = new FlowTracker(3*buk, buk, 2);
-            sk.push_back(ftrack);
-            // int buk = mem / 32;
-            // CMSketch *cms = new CMSketch(buk, 3);
-            // sk.push_back(cms);
+            // int buk = mem / 64;
+            // FlowTracker *ftrack = new FlowTracker(3*buk, buk, 2);
+            // sk.push_back(ftrack);
+            int buk = mem / 32;
+            CMSketch *cms = new CMSketch(buk, 3);
+            sk.push_back(cms);
             // int buk = mem / 142;
             // HashFlow *hashflow = new HashFlow(buk, buk, 3);
             // sk.push_back(hashflow);

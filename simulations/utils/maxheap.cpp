@@ -16,7 +16,7 @@ MaxHeap::insert(string flow, int val)
 		return true;
 	}
 
-	set<PSI>::iterator min_ele = data.end();
+	set<PSI>::iterator min_ele = --data.end();
 	if ((*min_ele).sc < val)
 	{
 		data.erase(min_ele);

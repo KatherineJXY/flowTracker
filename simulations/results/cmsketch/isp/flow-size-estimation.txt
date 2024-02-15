@@ -1,0 +1,14 @@
+The memory usage is 2^12KB. 
+relative error: 6.64843
+flow set coverage: 1
+heavy hitter precision: 0.235648
+heavy hitter recall: 0.900494
+heavy hitter f1-score: 0.373545
+
+The memory usage is 2^13KB. 
+relative error: 2.63192
+flow set coverage: 1
+heavy hitter precision: 0.259728
+heavy hitter recall: 0.992511
+heavy hitter f1-score: 0.411715
+

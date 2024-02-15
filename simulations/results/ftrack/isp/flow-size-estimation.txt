@@ -1,12 +1,27 @@
-The memory usage is 2^10KB. 
 The memory usage is 2^12KB. 
+relative error: 11.5545
+flow set coverage: 0.529346
+heavy hitter precision: 0.163984
+heavy hitter recall: 0.626641
+heavy hitter f1-score: 0.259944
+
+The memory usage is 2^13KB. 
+relative error: 4.51761
+flow set coverage: 0.556872
+heavy hitter precision: 0.245137
+heavy hitter recall: 0.82295
+heavy hitter f1-score: 0.377751
+
+The memory usage is 2^14KB. 
+relative error: 1.82704
+flow set coverage: 0.736155
+heavy hitter precision: 0.574161
+heavy hitter recall: 0.94868
+heavy hitter f1-score: 0.715367
+
 The memory usage is 2^15KB. 
-The memory usage is 2^10KB. 
-The memory usage is 2^10KB. 
-The memory usage is 2^10KB. 
-The memory usage is 2^10KB. 
-The memory usage is 2^10KB. 
-The memory usage is 2^10KB. 
-The memory usage is 2^10KB. 
-The memory usage is 2^10KB. 
-The memory usage is 2^10KB. 
+relative error: 0.678669
+flow set coverage: 0.892581
+heavy hitter precision: 0.868428
+heavy hitter recall: 0.991365
+heavy hitter f1-score: 0.925833
