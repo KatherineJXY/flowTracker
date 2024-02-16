@@ -1,0 +1,30 @@
+Flow size is 5M. 
+top-k precision: 0.973607
+top-k recall: 0.973607
+top-k f1-score: 0.973607
+
+Flow size is 6M. 
+top-k precision: 0.961786
+top-k recall: 0.961786
+top-k f1-score: 0.961786
+
+Flow size is 7M. 
+top-k precision: 0.946754
+top-k recall: 0.946754
+top-k f1-score: 0.946754
+
+Flow size is 8M. 
+top-k precision: 0.931268
+top-k recall: 0.931268
+top-k f1-score: 0.931268
+
+Flow size is 9M. 
+top-k precision: 0.910913
+top-k recall: 0.910913
+top-k f1-score: 0.910913
+
+Flow size is 10M. 
+top-k precision: 0.892117
+top-k recall: 0.892117
+top-k f1-score: 0.892117
+

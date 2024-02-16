@@ -42,7 +42,7 @@ void loadData(char file[], int no, int num_line = -1)
     std::cout << "Loading " << flow[no].size() << " of flows. " << endl;
 }
 
-void topkDetection(vector<Sketch*> sk, map<string, int> real_ans[], map<string, int> est_ans[], int top_k, string file_name)
+void topkDetection(vector<Sketch*> sk, map<string, double> real_ans[], map<string, double> est_ans[], int top_k, string file_name)
 {
     double precision = 0.0, recall = 0.0, f1_score = 0.0;
 
@@ -174,6 +174,7 @@ void averageDelayEstimation(vector<Sketch*> sk, vector< pair<string, int> > flow
     map<string, double> real_ans[num_sw+1];    // real ans
     map<string, int> flow_count[num_sw+1];  // packet count
     map<string, int> delay_sum[num_sw+1];
+    int topk;
 
     for (int j = 1; j <= num_sw; ++j)
     {
@@ -198,9 +199,12 @@ void averageDelayEstimation(vector<Sketch*> sk, vector< pair<string, int> > flow
             real_ans[j][it->first] = double(delay_sum[j][it->first] / it->second);
             est_ans[j][it->first] = sk[j]->query_average(it->first);
         }
+        topk = real_ans[j].size() * 0.1;
     }
     // campus : 90percentile 1866.0  data center : 1504.7142857142858    isp:1103.5
-    heavyHitterDetection(sk, real_ans, est_ans, 1866.0, file_name);
+    // heavyHitterDetection(sk, real_ans, est_ans, 1866.0, file_name);
+    topkDetection(sk, real_ans, est_ans, topk, file_name);
+
 }
 
 int main(int argc, char *argv[])
@@ -208,36 +212,64 @@ int main(int argc, char *argv[])
     srand(2024);
     
     // load data
-    string read_file = "../../traces/pcap/campus-pareto.csv";
+    string read_file = "../../traces/pcap/univ1-pareto.csv";
     std::cout << read_file << endl;
 
     // heavy hitter estimation
-    loadData((char*)read_file.c_str(), num_sw);
-    string write_to = "../results/sds/campus/average-delay-estimation.txt";
-    fstream fout(write_to, ios::out | ios::app);
+    // loadData((char*)read_file.c_str(), num_sw);
+    // string write_to = "../results/ftrack/data-center/topk-average-delay.txt";
+    // fstream fout(write_to, ios::out | ios::app);
 
-    for (int i = 10; i <= 16; ++i)
+    // for (int i = 10; i <= 16; ++i)
+    // {
+    //     int mem = pow(2, i) * 1024 * 8; // 2^i KB
+
+    //     vector<Sketch*> sk;
+
+    //     for (int j = 0; j <= num_sw; ++j)
+    //     {
+    //          int buk = mem / 96;
+    //          FlowTrackerAve *ftrack = new FlowTrackerAve(3*buk, buk, 2);
+    //          sk.push_back(ftrack);
+    //         //  int buk = mem / 64;
+    //         //  SimpleDelaySketch *sds = new SimpleDelaySketch(buk, 3);
+    //         //  sk.push_back(sds);
+    //         // int buk = mem / 80;
+    //         // LossyDelaySketch *lds = new LossyDelaySketch(buk, 3);
+    //         // sk.push_back(lds);
+    //     }
+
+    //     fout << "The memory usage is 2^" << i << "KB. " << endl;
+    //     std::cout << "The memory usage is 2^" << i << "KB. " << endl;
+
+    //     averageDelayEstimation(sk, flow, write_to, true);
+    // }
+
+    // top-k estimation
+    string write_to = "../results/ftrack/data-center/fs-topk-average-delay.txt";
+    fstream fout(write_to, ios::out | ios::app);
+    for (int i = 5; i <= 10; i++)
     {
-        int mem = pow(2, i) * 1024 * 8; // 2^i KB
+        int mem = pow(2, 14) * 1024 * 8; // 2^i KB
 
         vector<Sketch*> sk;
-
         for (int j = 0; j <= num_sw; ++j)
         {
-            //  int buk = mem / 96;
-            //  FlowTrackerAve *ftrack = new FlowTrackerAve(3*buk, buk, 2);
-            //  sk.push_back(ftrack);
-             int buk = mem / 64;
-             SimpleDelaySketch *sds = new SimpleDelaySketch(buk, 3);
-             sk.push_back(sds);
+            flow[j].clear();
+            int buk = mem / 96;
+            FlowTrackerAve *ftrack = new FlowTrackerAve(3*buk, buk, 2);
+            sk.push_back(ftrack);
+            //  int buk = mem / 64;
+            //  SimpleDelaySketch *sds = new SimpleDelaySketch(buk, 3);
+            //  sk.push_back(sds);
             // int buk = mem / 80;
             // LossyDelaySketch *lds = new LossyDelaySketch(buk, 3);
             // sk.push_back(lds);
         }
 
-        fout << "The memory usage is 2^" << i << "KB. " << endl;
-        std::cout << "The memory usage is 2^" << i << "KB. " << endl;
+        loadData((char*)read_file.c_str(), num_sw, 1000000*i);
 
+        fout << "Flow size is " << i << "M. " << endl;
         averageDelayEstimation(sk, flow, write_to, true);
     }
 
