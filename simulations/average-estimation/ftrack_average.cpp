@@ -68,11 +68,14 @@ FlowTrackerAve::insert(string flow, int val)
         int pos = flow_filter_hashes[i].run(flow.c_str(), flow.length()) % row_size + base;
         save_pos[i] = pos;
         
-        if (flow_filter[pos] > fcnt)
-            fcnt = flow_filter[pos];
-        
         if (flow_filter[pos] == 0 || fcnt == 0)
+        {
             fcnt = 0;
+        }
+        else
+        {
+            fcnt = max(flow_filter[pos], fcnt);
+        }
     }
     
     int resident_pos = main_table_hash->run(flow.c_str(), flow.length()) % main_table_size;
@@ -80,35 +83,53 @@ FlowTrackerAve::insert(string flow, int val)
     
     if (fcnt == 0 || fcnt == 1) // 0 for new flow, 1 for flow has been evicted
     {
+        // cout << "New flows!!" << endl;
         main_table[resident_pos].sentinel_count ++;
         fu = main_table[resident_pos].sentinel_count + 1;
-        
-        if(main_table[resident_pos].flow_count != 0)  // not empty bucket
+        // cout << "original resident pos: " << resident_pos << endl;
+        // cout << "flow count: " << main_table[resident_pos].flow_count << "\t sentinel count: " << main_table[resident_pos].sentinel_count << "\t statistic record: " << main_table[resident_pos].flow_records << endl;
+        if(main_table[resident_pos].sentinel_count != 1)  // not empty bucket
         {
-            int step_width = 1 << (main_table[resident_pos].sentinel_count - 1) - 1;
+            // int step_width = 1 << (main_table[resident_pos].sentinel_count - 1) - 1;
+            int step_width = main_table[resident_pos].sentinel_count - 1;
             resident_pos = (resident_pos + step_width) % main_table_size;
-            
-            if (main_table[resident_pos].flow_count != 0)   // substitute bucket is non-empty
+            // cout << "original bucket is not empty!!!" << endl;
+            // cout << "step width: " << step_width << "\t resident pos: " << resident_pos << endl;
+            // cout << "flow count: " << main_table[resident_pos].flow_count << "\t sentinel count: " << main_table[resident_pos].sentinel_count << "\t statistic record: " << main_table[resident_pos].flow_records << endl;
+            main_table[resident_pos].sentinel_count ++;
+
+            if (main_table[resident_pos].sentinel_count != 1)   // substitute bucket is non-empty
                 fu = 0;
-            else
-                main_table[resident_pos].sentinel_count ++;
         }
         
         if (fu != 0)    // successfully find a resident bucket
+        {
+            // cout << "Insertion..." << endl;
             main_table[resident_pos].flow_count ++;
             main_table[resident_pos].flow_records += val;
+            // cout << "resident pos: " << resident_pos << "\t flow count: " << main_table[resident_pos].flow_count << "\t sentinel count: " << main_table[resident_pos].sentinel_count << "\t statistic record: " << main_table[resident_pos].flow_records << endl;
+
+        }    
     }
     else    // existing flow
     {
-        int step_width = 1 << (fcnt - 2) - 1;
-        int resident_pos = (resident_pos + step_width) % main_table_size;
+        // int step_width = 1 << (fcnt - 2) - 1;
+        // cout << "Existing flow!!!" << endl;
+        int step_width = fcnt - 2;
+        resident_pos = (resident_pos + step_width) % main_table_size;
+        // cout << "step width: " << step_width << "\t resident pos: " << resident_pos << endl; 
         
         main_table[resident_pos].flow_count ++;
         main_table[resident_pos].flow_records += val;
+        // cout << "flow count: " << main_table[resident_pos].flow_count << "\t sentinel count: " << main_table[resident_pos].sentinel_count << "\t statistic record: " << main_table[resident_pos].flow_records << endl;
+
         if (main_table[resident_pos].flow_count < main_table [resident_pos].sentinel_count)
         {
+            // cout << "Evading flows!!!" << endl;
             // evade
             main_table[resident_pos].sentinel_count = 0;
+            // main_table[resident_pos].flow_count = 0;
+            // main_table[resident_pos].flow_records = 0;
             fu = 1;
         }
     }
@@ -119,7 +140,7 @@ FlowTrackerAve::insert(string flow, int val)
         for (i = 0; i < num_hash; i++)
         {
             int pos = save_pos[i];
-            if (flow_filter[pos] == 0 || flow_filter[pos] > fu)
+            if (flow_filter[pos] == 0 || flow_filter[pos] == 1 || flow_filter[pos] > fu)
                 flow_filter[pos] = fu;
         }
     }
@@ -137,22 +158,32 @@ FlowTrackerAve::query_average(string flow)
     for (i = 0, base = 0; i < num_hash; ++i, base += row_size)
     {
         int pos = flow_filter_hashes[i].run(flow.c_str(), flow.length()) % row_size + base;
-        
-        if (flow_filter[pos] > fcnt)
-            fcnt = flow_filter[pos];
-        
-        if (flow_filter[pos] == 0 || fcnt == 0)
+
+        if (flow_filter[pos] == 0)
+        {
             fcnt = 0;
+            break;
+        }
+
+        fcnt = max(fcnt, flow_filter[pos]);
     }
     
     int resident_pos = main_table_hash->run(flow.c_str(), flow.length()) % main_table_size;
     if (fcnt > 1)
     {
-        int step_width = 1 << (fcnt - 2) - 1;
+        // int step_width = 1 << (fcnt - 2) - 1;
+        int step_width = fcnt - 2;
         resident_pos = (resident_pos + step_width) % main_table_size;
         
         // querying flow count
-        ans = main_table[resident_pos].flow_records / main_table[resident_pos].flow_count;
+        if (main_table[resident_pos].flow_count == 0)
+        {
+            ans = 0.0;
+        }
+        else
+        {
+            ans = double(main_table[resident_pos].flow_records / main_table[resident_pos].flow_count);
+        }
     }
     
     return ans;

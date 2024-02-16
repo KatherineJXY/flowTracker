@@ -101,7 +101,7 @@ FlowTrackerMax::insert(string flow, int val)
     else    // existing flow
     {
         int step_width = 1 << (fcnt - 2) - 1;
-        int resident_pos = (resident_pos + step_width) % main_table_size;
+        resident_pos = (resident_pos + step_width) % main_table_size;
         
         main_table[resident_pos].flow_count ++;
         main_table[resident_pos].flow_records = max (main_table[resident_pos].flow_records, val);

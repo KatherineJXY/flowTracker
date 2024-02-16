@@ -1,6 +1,6 @@
-#include "ftrack_average.h"
-#include "lds.h"
-#include "sds.h"
+#include "ftrack_max.h"
+#include "Apnet_sketch.h"
+#include "sumax.h"
 
 #include <string.h>
 #include <fstream>
@@ -100,9 +100,8 @@ void topkDetection(vector<Sketch*> sk, map<string, int> real_ans[], map<string, 
     fout << "top-k f1-score: " << f1_score << endl << endl;
 }
 
-void heavyHitterDetection(vector<Sketch*> sk, map<string, double> real_ans[], map<string, double> est_ans[], double threshold, string file_name)
+void heavyHitterDetection(vector<Sketch*> sk, map<string, int> real_ans[], map<string, int> est_ans[], double threshold, string file_name)
 {
-    double re = 0.0;
     double precision = 0.0, recall = 0.0, f1_score = 0.0;
 
     for(int j = 1; j <= num_sw; ++j)
@@ -113,17 +112,8 @@ void heavyHitterDetection(vector<Sketch*> sk, map<string, double> real_ans[], ma
         for(auto &it : est_ans[j])
             est_heap.insert(it.first, it.second);
 
-        double lc_re = 0.0;
         for(auto &it : real_ans[j])
-        {
             rl_heap.insert(it.first, it.second);
-            if (it.second == 0)
-                lc_re += 0.0;
-            else
-                lc_re += fabs(it.second - est_ans[j][it.first]) / it.second;
-        }
-
-        re += lc_re / real_ans[j].size();
 
         set<string> real_hh = rl_heap.heavy_hitter(threshold);
         set<string> est_hh = est_heap.heavy_hitter(threshold);
@@ -154,7 +144,7 @@ void heavyHitterDetection(vector<Sketch*> sk, map<string, double> real_ans[], ma
         else
             recall += true_positives / (true_positives + false_negatives);
     }
-    re /= num_sw;
+
     precision /= num_sw;
     recall /= num_sw;
     if (precision + recall == 0)
@@ -163,7 +153,6 @@ void heavyHitterDetection(vector<Sketch*> sk, map<string, double> real_ans[], ma
         f1_score = 2 * (precision * recall) / (precision + recall);
 
     fstream fout(file_name, ios::out | ios::app);
-    fout << "relative error: " << re << endl;
     fout << "heavy hitter precision: " <<  precision << endl;
     fout << "heavy hitter recall: " << recall << endl;
     fout << "heavy hitter f1-score: " << f1_score << endl << endl;
@@ -171,9 +160,7 @@ void heavyHitterDetection(vector<Sketch*> sk, map<string, double> real_ans[], ma
 
 void averageDelayEstimation(vector<Sketch*> sk, vector< pair<string, int> > flow[], string file_name, bool init_first = false)
 {
-    map<string, double> real_ans[num_sw+1];    // real ans
-    map<string, int> flow_count[num_sw+1];  // packet count
-    map<string, int> delay_sum[num_sw+1];
+    map<string, int> real_ans[num_sw+1];    // real ans
 
     for (int j = 1; j <= num_sw; ++j)
     {
@@ -183,24 +170,22 @@ void averageDelayEstimation(vector<Sketch*> sk, vector< pair<string, int> > flow
         for (auto it = flow[j].begin(); it != flow[j].end(); ++it)
         {
             string fid = it->first;
-            flow_count[j][fid] ++;
-            delay_sum[j][fid] += it->second;
+            real_ans[j][fid] = max(real_ans[j][fid], it->second);
             sk[j]->insert(fid, it->second);
         }
     }
 
     // query after insertion
-    map<string, double> est_ans[num_sw+1];
+    map<string, int> est_ans[num_sw+1];
     for (int j = 1; j <= num_sw; ++j)
     {
-        for (auto it = flow_count[j].begin(); it != flow_count[j].end(); ++it)
+        for (auto it = real_ans[j].begin(); it != real_ans[j].end(); ++it)
         {
-            real_ans[j][it->first] = double(delay_sum[j][it->first] / it->second);
-            est_ans[j][it->first] = sk[j]->query_average(it->first);
+            est_ans[j][it->first] = sk[j]->query_max(it->first);
         }
     }
     // campus : 90percentile 515.6666666666666  data center : 512.6666666666666     isp:514.0
-    heavyHitterDetection(sk, real_ans, est_ans, 1866.0, file_name);
+    heavyHitterDetection(sk, real_ans, est_ans, 515.6666666666666, file_name);
 }
 
 int main(int argc, char *argv[])
@@ -225,7 +210,7 @@ int main(int argc, char *argv[])
         for (int j = 0; j <= num_sw; ++j)
         {
              int buk = mem / 96;
-             FlowTrackerAve *ftrack = new FlowTrackerAve(3*buk, buk, 2);
+             FlowTrackerMax *ftrack = new FlowTrackerMax(3*buk, buk, 2);
              sk.push_back(ftrack);
             //  int buk = mem / 64;
             //  SimpleDelaySketch *sds = new SimpleDelaySketch(buk, 3);

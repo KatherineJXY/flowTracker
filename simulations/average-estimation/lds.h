@@ -1,9 +1,9 @@
 #ifndef LOSSY_DELAY_SKETCH_HEADER
 #define LOSSY_DELAY_SKETCH_HEADER
 
-#include "utils/sketch.h"
-#include "utils/maxheap.h"
-#include "utils/BOBHash32.h"
+#include "../utils/sketch.h"
+#include "../utils/maxheap.h"
+#include "../utils/BOBHash32.h"
 
 class LossyDelaySketch : public Sketch
 {

@@ -62,6 +62,7 @@ SimpleDelaySketch::insert(string flow, int val)
 double
 SimpleDelaySketch::query_average(string flow)
 {
+    double empty_ans = 0.0;
     int min_count = INT_MAX;
     int min_sum = INT_MAX;
 
@@ -73,5 +74,8 @@ SimpleDelaySketch::query_average(string flow)
         min_sum = min(min_sum, sds_buks[pos].delay_sum);
     }
 
-    return double(min_sum/min_count);
+    if (min_count != 0)
+        return double(min_sum/min_count);
+    
+    return empty_ans;
 }

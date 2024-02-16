@@ -213,7 +213,7 @@ int main(int argc, char *argv[])
     srand(2024);
     
     // load data
-    string read_file = "../../traces/univ1.csv";
+    string read_file = "../../traces/pcap/univ1.csv";
     cout << read_file << endl;
 
     // heavy hitter estimation
@@ -235,7 +235,7 @@ int main(int argc, char *argv[])
 //            int buk = mem / 32;
 //            CMSketch *cms = new CMSketch(buk, 3);
 //            sk.push_back(cms);
-//             int buk = mem / 142;
+//             int buk = mem / 152;
 //             HashFlow *hashflow = new HashFlow(buk, buk, 3);
 //             sk.push_back(hashflow);
 //             int buk = mem / 168;
@@ -266,7 +266,7 @@ int main(int argc, char *argv[])
 //              int buk = mem / 32;
 //              CMSketch *cms = new CMSketch(buk, 3);
 //              sk.push_back(cms);
-////              int buk = mem / 142;
+////              int buk = mem / 152;
 ////              HashFlow *hashflow = new HashFlow(buk, buk, 3);
 ////              sk.push_back(hashflow);
 ////              int buk = mem / 168;
