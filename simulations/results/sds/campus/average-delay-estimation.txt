@@ -23,10 +23,10 @@ heavy hitter recall: 0.82104
 heavy hitter f1-score: 0.893421
 
 The memory usage is 2^10KB. 
-relative error: 167.594
-heavy hitter precision: 0.999158
-heavy hitter recall: 0.956469
-heavy hitter f1-score: 0.977348
+relative error: 0.039456
+heavy hitter precision: 0.995793
+heavy hitter recall: 0.954051
+heavy hitter f1-score: 0.974475
 
 The memory usage is 2^11KB. 
 relative error: 0.0075714
@@ -35,8 +35,7 @@ heavy hitter recall: 0.993148
 heavy hitter f1-score: 0.996562
 
 The memory usage is 2^12KB. 
-relative error: 10.9336
+relative error: 0.00100248
 heavy hitter precision: 1
-heavy hitter recall: 0.997985
-heavy hitter f1-score: 0.998991
-
+heavy hitter recall: 0.998791
+heavy hitter f1-score: 0.999395

@@ -107,8 +107,8 @@ void heavyHitterDetection(vector<Sketch*> sk, map<string, double> real_ans[], ma
 
     for(int j = 1; j <= num_sw; ++j)
     {
-        MaxHeap rl_heap(real_ans[j].size());
-        MaxHeap est_heap(est_ans[j].size());
+        MaxHeap rl_heap(real_ans[j].size()*0.2);
+        MaxHeap est_heap(est_ans[j].size()*0.2);
 
         for(auto &it : est_ans[j])
             est_heap.insert(it.first, it.second);
@@ -199,7 +199,7 @@ void averageDelayEstimation(vector<Sketch*> sk, vector< pair<string, int> > flow
             est_ans[j][it->first] = sk[j]->query_average(it->first);
         }
     }
-    // campus : 90percentile 515.6666666666666  data center : 512.6666666666666     isp:514.0
+    // campus : 90percentile 1866.0  data center : 1504.7142857142858    isp:1103.5
     heavyHitterDetection(sk, real_ans, est_ans, 1866.0, file_name);
 }
 
@@ -213,10 +213,10 @@ int main(int argc, char *argv[])
 
     // heavy hitter estimation
     loadData((char*)read_file.c_str(), num_sw);
-    string write_to = "../results/ftrack/campus/average-delay-estimation.txt";
+    string write_to = "../results/sds/campus/average-delay-estimation.txt";
     fstream fout(write_to, ios::out | ios::app);
 
-    for (int i = 6; i <= 12; ++i)
+    for (int i = 10; i <= 16; ++i)
     {
         int mem = pow(2, i) * 1024 * 8; // 2^i KB
 
@@ -224,13 +224,13 @@ int main(int argc, char *argv[])
 
         for (int j = 0; j <= num_sw; ++j)
         {
-             int buk = mem / 96;
-             FlowTrackerAve *ftrack = new FlowTrackerAve(3*buk, buk, 2);
-             sk.push_back(ftrack);
-            //  int buk = mem / 64;
-            //  SimpleDelaySketch *sds = new SimpleDelaySketch(buk, 3);
-            //  sk.push_back(sds);
-            // int buk = mem / 160;
+            //  int buk = mem / 96;
+            //  FlowTrackerAve *ftrack = new FlowTrackerAve(3*buk, buk, 2);
+            //  sk.push_back(ftrack);
+             int buk = mem / 64;
+             SimpleDelaySketch *sds = new SimpleDelaySketch(buk, 3);
+             sk.push_back(sds);
+            // int buk = mem / 80;
             // LossyDelaySketch *lds = new LossyDelaySketch(buk, 3);
             // sk.push_back(lds);
         }

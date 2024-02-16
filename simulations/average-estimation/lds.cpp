@@ -122,6 +122,8 @@ LossyDelaySketch::query_average(string flow)
             sum_delay += cell.first;
         }
     }
+    if (sum_cnt == 0)
+        return 0.0;
 
     return double(sum_delay/sum_cnt);
 }
