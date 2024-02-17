@@ -1,9 +1,9 @@
 #ifndef APNET_SKETCH_HEADER
 #define APNET_SKETCH_HEADER
 
-#include "utils/sketch.h"
-#include "utils/maxheap.h"
-#include "utils/BOBHash32.h"
+#include "../utils/sketch.h"
+#include "../utils/maxheap.h"
+#include "../utils/BOBHash32.h"
 
 class ApnetSketch : public Sketch
 {

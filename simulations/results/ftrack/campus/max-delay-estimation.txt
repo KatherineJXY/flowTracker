@@ -1,0 +1,34 @@
+The memory usage is 2^6KB. 
+heavy hitter precision: 0.270263
+heavy hitter recall: 0.417977
+heavy hitter f1-score: 0.328268
+
+The memory usage is 2^7KB. 
+heavy hitter precision: 0.455838
+heavy hitter recall: 0.607416
+heavy hitter f1-score: 0.520823
+
+The memory usage is 2^8KB. 
+heavy hitter precision: 0.725241
+heavy hitter recall: 0.85006
+heavy hitter f1-score: 0.782706
+
+The memory usage is 2^9KB. 
+heavy hitter precision: 0.939608
+heavy hitter recall: 0.96574
+heavy hitter f1-score: 0.952495
+
+The memory usage is 2^10KB. 
+heavy hitter precision: 0.9828
+heavy hitter recall: 0.990326
+heavy hitter f1-score: 0.986549
+
+The memory usage is 2^11KB. 
+heavy hitter precision: 0.997987
+heavy hitter recall: 0.999194
+heavy hitter f1-score: 0.99859
+
+The memory usage is 2^12KB. 
+heavy hitter precision: 0.998388
+heavy hitter recall: 0.998388
+heavy hitter f1-score: 0.998388

@@ -1,9 +1,9 @@
 #ifndef SUMAX_HEADER_H
 #define SUMAX_HEADER_H
 
-#include "utils/sketch.h"
-#include "utils/maxheap.h"
-#include "utils/BOBHash32.h"
+#include "../utils/sketch.h"
+#include "../utils/maxheap.h"
+#include "../utils/BOBHash32.h"
 
 class SuMax : public Sketch
 {

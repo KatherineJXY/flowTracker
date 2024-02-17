@@ -158,7 +158,7 @@ void heavyHitterDetection(vector<Sketch*> sk, map<string, int> real_ans[], map<s
     fout << "heavy hitter f1-score: " << f1_score << endl << endl;
 }
 
-void averageDelayEstimation(vector<Sketch*> sk, vector< pair<string, int> > flow[], string file_name, bool init_first = false)
+void maxDelayEstimation(vector<Sketch*> sk, vector< pair<string, int> > flow[], string file_name, bool init_first = false)
 {
     map<string, int> real_ans[num_sw+1];    // real ans
 
@@ -184,8 +184,8 @@ void averageDelayEstimation(vector<Sketch*> sk, vector< pair<string, int> > flow
             est_ans[j][it->first] = sk[j]->query_max(it->first);
         }
     }
-    // campus : 90percentile 515.6666666666666  data center : 512.6666666666666     isp:514.0
-    heavyHitterDetection(sk, real_ans, est_ans, 515.6666666666666, file_name);
+    // campus : 90percentile 5890  data center : 7369     isp:2761
+    heavyHitterDetection(sk, real_ans, est_ans, 5890, file_name);
 }
 
 int main(int argc, char *argv[])
@@ -198,7 +198,7 @@ int main(int argc, char *argv[])
 
     // heavy hitter estimation
     loadData((char*)read_file.c_str(), num_sw);
-    string write_to = "../results/ftrack/campus/average-delay-estimation.txt";
+    string write_to = "../results/sumax/campus/max-delay-estimation.txt";
     fstream fout(write_to, ios::out | ios::app);
 
     for (int i = 6; i <= 12; ++i)
@@ -209,21 +209,21 @@ int main(int argc, char *argv[])
 
         for (int j = 0; j <= num_sw; ++j)
         {
-             int buk = mem / 96;
-             FlowTrackerMax *ftrack = new FlowTrackerMax(3*buk, buk, 2);
-             sk.push_back(ftrack);
-            //  int buk = mem / 64;
-            //  SimpleDelaySketch *sds = new SimpleDelaySketch(buk, 3);
-            //  sk.push_back(sds);
-            // int buk = mem / 160;
-            // LossyDelaySketch *lds = new LossyDelaySketch(buk, 3);
-            // sk.push_back(lds);
+            // int buk = mem / 96;
+            // FlowTrackerMax *ftrack = new FlowTrackerMax(3*buk, buk, 2);
+            // sk.push_back(ftrack);
+            // int buk = mem / 48;
+            // ApnetSketch *apnet = new ApnetSketch(buk, 3);
+            // sk.push_back(apnet);
+            int buk = mem / 32;
+            SuMax *sumax = new SuMax(buk, 3);
+            sk.push_back(sumax);
         }
 
         fout << "The memory usage is 2^" << i << "KB. " << endl;
         std::cout << "The memory usage is 2^" << i << "KB. " << endl;
 
-        averageDelayEstimation(sk, flow, write_to, true);
+        maxDelayEstimation(sk, flow, write_to, true);
     }
 
 }

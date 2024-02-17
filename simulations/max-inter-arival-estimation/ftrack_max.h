@@ -1,9 +1,9 @@
 #ifndef FTRACK_MAX_HEADER
 #define FTRACK_MAX_HEADER
 
-#include "utils/sketch.h"
-#include "utils/maxheap.h"
-#include "utils/BOBHash32.h"
+#include "../utils/sketch.h"
+#include "../utils/maxheap.h"
+#include "../utils/BOBHash32.h"
 
 class FlowTrackerMax : public Sketch
 {
